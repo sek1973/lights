@@ -1,3 +1,4 @@
+
 // ------------------------------- effects include section -----------------------------------
 #include "strobe.h"
 #include "fade_in_out.h"
@@ -6,6 +7,7 @@
 #include "running_led.h"
 #include "rainbow_static.h"
 #include "fire.h"
+#include "leds_off.h"
 // -------------------------------------------------------------------------------------------
 
 typedef void (*EffectFunction) ();
@@ -36,7 +38,12 @@ const int effectsCount = 6;
 // *******************************************************************************************
 
 void switch_effect() {
-  effects[LED_Effect].fn();  
+  syncTime();
+  if (checkTimeSpan()) {
+    effects[LED_Effect].fn();  
+  } else {
+    leds_off();
+  }
 }
 
 void create_buttons() {
@@ -48,7 +55,7 @@ void create_buttons() {
 void effect_from_header() {  
   for (int i = 0; i < effectsCount; i++) {
     if (header.indexOf("GET /" + effects[i].url + "/") >= 0) {
-      Serial.println("effect switched to " + effects[i].title + "...");
+      Serial.println("effect switched to " + effects[i].title + "...");      
       LED_Effect = i;
       break;
     }

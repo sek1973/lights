@@ -1,6 +1,5 @@
 // For webserver needs
 #include <WiFi.h>
-#include "time.h"
 #include "webserver_settings.h"
 
 const char* ntpServer = "pool.ntp.org";
@@ -12,9 +11,6 @@ WiFiClient client;
 // Variable to store the HTTP request
 String header;
 
-// store time received from NTP server
-struct tm timeinfo;
-
 #include "effects.h"
 
 // Set web server port number to 80
@@ -22,15 +18,6 @@ WiFiServer server(80);
 
 void init() {
   Serial.begin(115200);
-}
-
-void getTime() {
-  if (getLocalTime(&timeinfo)) {    
-    Serial.print("Time received: ");
-    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
-  } else {
-    Serial.println("Failed to obtain time");
-  }
 }
 
 void connectToWiFi() {
@@ -51,7 +38,7 @@ void connectToWiFi() {
       Serial.println("IP address: ");
       Serial.println(WiFi.localIP());// this will display the Ip address of the board which should be entered into your browser
       configTime(gmtOffset_sec, daylightOffset_sec, ntpServer);      
-      getTime();
+      getTimeInfo();
       server.begin();
     } else {
       WiFi.disconnect();

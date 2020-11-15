@@ -1,3 +1,4 @@
+#include "time.h"
 #include <NeoPixelBrightnessBus.h> // instead of NeoPixelBus.h
 #ifdef __AVR__
  #include <avr/power.h> // Required for 16 MHz Adafruit Trinket
@@ -8,7 +9,7 @@
 #define LED_PIN     4
 
 // How many NeoPixels are attached to the Arduino?
-#define LED_COUNT  200
+#define LED_COUNT  98
 
 // NeoPixel brightness, 0 (min) to 255 (max)
 #define BRIGHTNESS 10
@@ -28,6 +29,11 @@ NeoPixelBrightnessBus<NeoRgbFeature, Neo800KbpsMethod> strip(LED_COUNT, LED_PIN)
 
 // Current effect
 int LED_Effect = 0;
+
+// store time received from NTP server
+struct tm timeinfo;
+// to register current tick and infer time span
+clock_t registeredTick;
 
 void showStrip() {
   strip.Show();
@@ -50,4 +56,31 @@ void setAllWBright(byte red, byte green, byte blue, byte bright) {
     setPixel(i, red, green, blue); 
   }
   showStrip();
+}
+
+void getTimeInfo() {
+  if (getLocalTime(&timeinfo)) {    
+    Serial.print("Time received: ");
+    Serial.println(&timeinfo, "%A, %B %d %Y %H:%M:%S");
+  } else {
+    Serial.println("Failed to obtain time");
+  }
+}
+
+void syncTime() {
+  clock_t currentTick;
+  currentTick = clock();
+  if ((currentTick - registeredTick) / CLOCKS_PER_SEC >= 60) {
+    registeredTick = currentTick;
+    getTimeInfo();
+  }
+}
+
+bool checkTimeSpan() {
+  syncTime();
+  if (timeinfo.tm_hour > 15 && timeinfo.tm_hour < 22) {
+    return true;
+  } else {
+    return false;
+  }
 }
