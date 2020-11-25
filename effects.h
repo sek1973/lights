@@ -32,9 +32,10 @@ EffectsData effects[] = {
   {url: "rgbloop", title: "RGB loop", fn: []() { RGBLoop(); }},
   {url: "runningled", title: "Running LED", fn: []() { runningLed(); }},
   {url: "lightning", title: "Lightning", fn: []() { strobeRandom(200, 200, 200); }},
+  {url: "ledsoff", title: "OFF", fn: []() { leds_off(); }},
 };
 
-const int effectsCount = 6;
+const int effectsCount = 7;
 // *******************************************************************************************
 
 void switch_effect() {

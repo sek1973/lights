@@ -61,7 +61,7 @@ void runWebServer(void *parameter) {
           header += c;
           if (c == '\n') {                    // if the byte is a newline character
             // if the current line is blank, you got two newline characters in a row.
-            // that's the end of the client HTTP request, so send a response:
+            // that's the end of the client HTTP request, so send a response:           
             if (currentLine.length() == 0) {
               // HTTP headers always start with a response code (e.g. HTTP/1.1 200 OK)
               // and a content-type so the client knows what's coming, then a blank line:
@@ -84,10 +84,36 @@ void runWebServer(void *parameter) {
               client.println("</style></head>");
               
               // Web Page Heading
-              client.println("<body><h1>ESP8266 Web Server</h1>");
+              client.println("<body><h1>Lights Web Server</h1>");
 
               create_buttons();
-                
+
+              client.println("<hr>");              
+              client.println("<form method=\"POST\">");
+
+              client.println("<div style=\"display: flex; flex-direction: column; width: 100%; padding: 5px\">");
+              
+              client.println("<div style=\"display: flex; flex-direction: row; width: 100%; justify-content: center;\">");
+              client.println("<div style=\"padding: 10px;\">");
+              client.println("Start hour: <input type=\"number\" name=\"start_hour1\" /> <br/>");
+              client.println("</div><div style=\"padding: 10px;\">");
+              client.println("Stop hour: <input type=\"number\" name=\"stop_hour1\" /> <br/>");
+              client.println("</div>");
+              client.println("</div>");
+
+              client.println("<div style=\"display: flex; flex-direction: row; width: 100%; justify-content: center;\">");              
+              client.println("<div style=\"padding: 10px;\">");
+              client.println("Start hour: <input type=\"number\" name=\"start_hour2\" /> <br/>");
+              client.println("</div><div style=\"padding: 10px;\">");
+              client.println("Stop hour: <input type=\"number\" name=\"stop_hour2\" /> <br/>");
+              client.println("</div>");
+              client.println("</div>");
+
+              client.println("</div>");
+                            
+              client.println("<input type=\"submit\" name=\"action\" value=\"Submit\" />");
+              client.println("</form>");
+                              
               client.println("</body></html>");
               
               // The HTTP response ends with another blank line
