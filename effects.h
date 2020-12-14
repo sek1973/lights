@@ -53,9 +53,9 @@ void create_buttons() {
   } 
 }
 
-void effect_from_header() {  
+void effect_from_header(String header) {  
   for (int i = 0; i < effectsCount; i++) {
-    if (header.indexOf("GET /" + effects[i].url + "/") >= 0) {
+    if (header == "/" + effects[i].url + "/") {
       Serial.println("effect switched to " + effects[i].title + "...");      
       LED_Effect = i;
       break;
