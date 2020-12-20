@@ -1,4 +1,5 @@
 #include "common.h"
+#include "settings.h"
 #include "webserver.h"
 
 // !!!!!!!!!!!!!!!!!!!!!!! To add new effect go to effects.h file !!!!!!!!!!!!!!!!!!!!!!!
@@ -6,7 +7,8 @@
 void setup() {
   strip.Begin();           // INITIALIZE NeoPixel strip object (REQUIRED)
   showStrip();            // Turn OFF all pixels ASAP
-  strip.SetBrightness(BRIGHTNESS);
+  initFlashMemory();  
+  readParamsFromFlash();  
   runTasks();  
 }
 

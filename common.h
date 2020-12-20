@@ -9,10 +9,7 @@
 #define LED_PIN     4
 
 // How many NeoPixels are attached to the Arduino?
-#define LED_COUNT  98
-
-// NeoPixel brightness, 0 (min) to 255 (max)
-#define BRIGHTNESS 10
+#define LED_COUNT  8
 
 // Declare our NeoPixel strip object:
 // Adafruit_NeoPixel strip(LED_COUNT, LED_PIN, NEO_RGB + NEO_KHZ800);
@@ -27,13 +24,41 @@
 //NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod> strip(LED_COUNT, LED_PIN);
 NeoPixelBrightnessBus<NeoRgbFeature, Neo800KbpsMethod> strip(LED_COUNT, LED_PIN);
 
-// Current effect
-int LED_Effect = 0;
-
 // store time received from NTP server
 struct tm timeinfo;
 // to register current tick and infer time span
 clock_t registeredTick;
+
+struct TimeSpan {
+  byte startHour;
+  byte stopHour;
+};
+
+const int settingsCount = 6;
+
+const String settingsParams[settingsCount] {
+  "brightness",
+  "effect",
+  "start_hour1",
+  "stop_hour1",
+  "start_hour2",
+  "stop_hour2"
+};
+
+struct Settings {  
+  byte brightness; // NeoPixel brightness, 0 (min) to 255 (max)
+  byte effect;
+  TimeSpan spans[2];  
+};
+
+Settings settings = {
+  brightness: 50,
+  effect: 0,
+  spans: { 
+    { startHour: 0, stopHour: 0 },
+    { startHour: 0, stopHour: 0 } 
+  }
+};
 
 void showStrip() {
   strip.Show();
@@ -78,9 +103,14 @@ void syncTime() {
 
 bool checkTimeSpan() {
   syncTime();
-  if (timeinfo.tm_hour > 15 && timeinfo.tm_hour < 22) {
+  if (settings.spans[0].startHour == 0 && settings.spans[0].stopHour == 0
+    && settings.spans[1].startHour == 0 && settings.spans[1].stopHour == 0) {    
+    return true; 
+  } else if (timeinfo.tm_hour > settings.spans[0].startHour && timeinfo.tm_hour < settings.spans[0].stopHour) {    
     return true;
-  } else {
+  } else if (timeinfo.tm_hour > settings.spans[1].startHour && timeinfo.tm_hour < settings.spans[1].stopHour) {    
+    return true;
+  } else {    
     return false;
   }
 }

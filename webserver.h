@@ -11,7 +11,6 @@ const int   daylightOffset_sec = 0;
 
 // those variables are used by effects file
 WiFiClient client;
-
 #include "effects.h"
 
 // Set web server port number to 80
@@ -48,7 +47,62 @@ void connectToWiFi() {
   }
 }
 
-void runWebServer(void *parameter) {
+void createHoursForm() {
+  client.println("<form method=\"POST\" action=\"\">");
+  client.println("  <div style=\"display: flex; flex-direction: column; width: 100%; padding: 5px\">");
+  client.println("    <div style=\"display: flex; flex-direction: row; width: 100%; justify-content: center;\">");  
+  client.println("      <div style=\"padding: 10px;\">");
+  client.println("        Brightness (0 - 255): <input type=\"number\" name=\"brightness\" min=\"0\" max=\"255\" step=\"1\" value=\"" + String(settings.brightness) + "\"/> <br/>");
+  client.println("      </div>");  
+  client.println("    </div>");
+  client.println("    <div style=\"display: flex; flex-direction: column; width: 100%; padding: 5px\">");
+  client.println("      <div style=\"display: flex; flex-direction: row; width: 100%; justify-content: center;\">");
+  client.println("        <div style=\"padding: 10px;\">");
+  client.println("          Start hour: <input type=\"number\" name=\"start_hour1\" min=\"0\" max=\"23\" step=\"1\" value=\"" + String(settings.spans[0].startHour) + "\"/> <br/>");
+  client.println("        </div>");
+  client.println("        <div style=\"padding: 10px;\">");
+  client.println("          Stop hour: <input type=\"number\" name=\"stop_hour1\" min=\"0\" max=\"23\" step=\"1\" value=\"" + String(settings.spans[0].stopHour) + "\"/> <br/>");
+  client.println("        </div>");
+  client.println("      </div>");
+  client.println("      <div style=\"display: flex; flex-direction: row; width: 100%; justify-content: center;\">");              
+  client.println("        <div style=\"padding: 10px;\">");  
+  client.println("          Start hour: <input type=\"number\" name=\"start_hour2\" min=\"0\" max=\"23\" step=\"1\" value=\"" + String(settings.spans[1].startHour) + "\"/> <br/>");
+  client.println("        </div>");
+  client.println("        <div style=\"padding: 10px;\">");
+  client.println("          Stop hour: <input type=\"number\" name=\"stop_hour2\" min=\"0\" max=\"23\" step=\"1\" value=\"" + String(settings.spans[1].stopHour) + "\"/> <br/>");
+  client.println("        </div>");
+  client.println("      </div>");
+  client.println("    </div>");
+  client.println("  </div>");            
+  client.println("  <input type=\"submit\" name=\"action\" value=\"Submit\" style=\"background-color: darkred; border: none; color: white; padding: 16px 40px; text-decoration: none; font-size: 20px; margin: 2px; cursor: pointer;\"/>");
+  client.println("</form>");
+}
+
+String getString(char *value, int length) {
+  String result = "";
+  for (int i = 0; i < length; i++) {
+    if (byte(value[i]) == 0) { return result; }
+    if (byte(value[i]) > 32) { result += value[i]; }
+  }
+  return result;
+}
+
+void handleRequestParams() {
+  char name[HTTP_REQ_PARAM_NAME_LENGTH], value[HTTP_REQ_PARAM_VALUE_LENGTH];
+  // list received parameters GET and POST
+  Serial.println("Parameters:");
+  for (int i = 1; i <= httpReq.paramCount; i++) {
+    httpReq.getParam(i, name, value);                  
+    Serial.print(name);    
+    Serial.print(" - ");
+    Serial.println(value);     
+    writeToMemory(getString(name, HTTP_REQ_PARAM_NAME_LENGTH),
+      getString(value, HTTP_REQ_PARAM_VALUE_LENGTH).toInt());
+  }
+  readParamsFromFlash();
+}
+
+void runWebServer(void *parameter) {  
   init();
   while(true) {
     connectToWiFi();
@@ -83,33 +137,13 @@ void runWebServer(void *parameter) {
             // Web Page Heading
             client.println("<body><h1>Lights Web Server</h1>");
 
-            create_buttons();
+            createButtons();
 
             client.println("<hr>");              
-            client.println("<form method=\"POST\" action=\"\">");
 
-            client.println("<div style=\"display: flex; flex-direction: column; width: 100%; padding: 5px\">");
+            handleRequestParams();
             
-            client.println("<div style=\"display: flex; flex-direction: row; width: 100%; justify-content: center;\">");
-            client.println("<div style=\"padding: 10px;\">");
-            client.println("Start hour: <input type=\"number\" name=\"start_hour1\" /> <br/>");
-            client.println("</div><div style=\"padding: 10px;\">");
-            client.println("Stop hour: <input type=\"number\" name=\"stop_hour1\" /> <br/>");
-            client.println("</div>");
-            client.println("</div>");
-
-            client.println("<div style=\"display: flex; flex-direction: row; width: 100%; justify-content: center;\">");              
-            client.println("<div style=\"padding: 10px;\">");
-            client.println("Start hour: <input type=\"number\" name=\"start_hour2\" /> <br/>");
-            client.println("</div><div style=\"padding: 10px;\">");
-            client.println("Stop hour: <input type=\"number\" name=\"stop_hour2\" /> <br/>");
-            client.println("</div>");
-            client.println("</div>");
-
-            client.println("</div>");
-                          
-            client.println("<input type=\"submit\" name=\"action\" value=\"Submit\" />");
-            client.println("</form>");
+            createHoursForm();
                             
             client.println("</body></html>");
               
@@ -124,30 +158,6 @@ void runWebServer(void *parameter) {
             Serial.println(httpReq.version);            
             Serial.print("paramCount: ");
             Serial.println(httpReq.paramCount);
-
-            char name[HTTP_REQ_PARAM_NAME_LENGTH], value[HTTP_REQ_PARAM_VALUE_LENGTH];
-            // list received parameters GET and POST
-            Serial.println("Parameters:");
-            for (int i=1; i <= httpReq.paramCount; i++) {
-              httpReq.getParam(i, name, value);
-              Serial.print(name);
-              Serial.print(" - ");
-              Serial.println(value);            
-            }
-            // list received cookies
-            Serial.println("Cookies:");
-            for(int i=1; i<=httpReq.cookieCount; i++) {
-              httpReq.getCookie(i, name, value);
-              Serial.print(name);
-              Serial.print(" - ");
-              Serial.println(value);            
-            }
-            // find a particular parameter name
-            int pos = httpReq.getParam("start_hour1", value);
-            if (pos > 0) {            
-              Serial.print("Found 'start_hour1'. Value: ");
-              Serial.println(value);            
-            }
           
             httpReq.resetRequest(); // Reset object and free dynamic allocated memory
             

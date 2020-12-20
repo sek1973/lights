@@ -40,14 +40,14 @@ const int effectsCount = 7;
 
 void switch_effect() {
   syncTime();
-  if (checkTimeSpan()) {
-    effects[LED_Effect].fn();  
+  if (checkTimeSpan()) {        
+    effects[settings.effect].fn();  
   } else {
     leds_off();
   }
 }
 
-void create_buttons() {
+void createButtons() {
   for (int i = 0; i < effectsCount; i++) {
     client.println("<p><a href=\"/" + effects[i].url + "/\"><button class=\"button\">" + effects[i].title + "</button></a></p>");  
   } 
@@ -56,8 +56,9 @@ void create_buttons() {
 void effect_from_header(String header) {  
   for (int i = 0; i < effectsCount; i++) {
     if (header == "/" + effects[i].url + "/") {
-      Serial.println("effect switched to " + effects[i].title + "...");      
-      LED_Effect = i;
+      Serial.println("effect switched to " + effects[i].title + "...");            
+      settings.effect = i;
+      writeToMemory("effect", i);
       break;
     }
   }  
