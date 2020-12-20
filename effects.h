@@ -40,7 +40,7 @@ EffectsData effects[effectsCount] = {
 
 void switch_effect() {
   syncTime();
-  if (checkTimeSpan() && settings.effect > 0 && settings.effect < effectsCount) {        
+  if (checkTimeSpan() && settings.effect >= 0 && settings.effect < effectsCount) {        
     effects[settings.effect].fn();  
   } else {
     leds_off();
