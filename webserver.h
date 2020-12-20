@@ -120,8 +120,6 @@ void runWebServer(void *parameter) {
             client.println("Content-type:text/html");
             client.println("Connection: close");
             client.println();
-
-            effect_from_header(httpReq.uri);
          
             // Display the HTML web page
             client.println("<!DOCTYPE html><html>");
