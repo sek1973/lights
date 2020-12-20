@@ -24,7 +24,9 @@ struct EffectsData {
 // * modify effects array by inserting new item referring your new effect
 // * update effectsCount constant
 
-EffectsData effects[] = {
+const int effectsCount = 7;
+
+EffectsData effects[effectsCount] = {
   {title: "Rainbow", fn: []() { rainbow(100); }},
   {title: "Rainbow static", fn: []() { rainbow_static(100); }},
   {title: "Fire", fn: []() { fire(); }},
@@ -34,12 +36,11 @@ EffectsData effects[] = {
   {title: "OFF", fn: []() { leds_off(); }},
 };
 
-const int effectsCount = 7;
 // *******************************************************************************************
 
 void switch_effect() {
   syncTime();
-  if (checkTimeSpan()) {        
+  if (checkTimeSpan() && settings.effect > 0 && settings.effect < effectsCount) {        
     effects[settings.effect].fn();  
   } else {
     leds_off();
