@@ -106,9 +106,9 @@ bool checkTimeSpan() {
   if (settings.spans[0].startHour == 0 && settings.spans[0].stopHour == 0
       && settings.spans[1].startHour == 0 && settings.spans[1].stopHour == 0) {
     return true;
-  } else if (timeinfo.tm_hour > settings.spans[0].startHour && timeinfo.tm_hour < settings.spans[0].stopHour) {
+  } else if (timeinfo.tm_hour >= settings.spans[0].startHour && timeinfo.tm_hour < settings.spans[0].stopHour) {
     return true;
-  } else if (timeinfo.tm_hour > settings.spans[1].startHour && timeinfo.tm_hour < settings.spans[1].stopHour) {
+  } else if (timeinfo.tm_hour >= settings.spans[1].startHour && timeinfo.tm_hour < settings.spans[1].stopHour) {
     return true;
   } else {
     return false;
