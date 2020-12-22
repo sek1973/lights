@@ -24,6 +24,9 @@
 //NeoPixelBus<NeoRgbFeature, Neo800KbpsMethod> strip(LED_COUNT, LED_PIN);
 NeoPixelBrightnessBus<NeoRgbFeature, Neo800KbpsMethod> strip(LED_COUNT, LED_PIN);
 
+// signum function
+#define sgn(x) ((x) < 0 ? -1 : ((x) > 0 ? 1 : 0))
+
 // store time received from NTP server
 struct tm timeinfo;
 // to register current tick and infer time span

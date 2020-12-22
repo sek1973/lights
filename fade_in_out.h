@@ -1,4 +1,5 @@
 void fadeInOut() {
+  randomSeed(analogRead(0));
   int r = random(0, 255);
   int g = random(0, 255);
   int b = random(0, 255);
