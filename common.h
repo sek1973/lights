@@ -64,7 +64,18 @@ void showStrip() {
   strip.Show();
 }
 
+void setRelativeBrightness(byte bright) {
+  byte relative = settings.brightness * bright / 255;
+  strip.SetBrightness(relative);
+}
+
 void setPixel(int pixel, byte red, byte green, byte blue) {
+  strip.SetBrightness(settings.brightness);
+  strip.SetPixelColor(pixel, RgbColor(red, green, blue));
+}
+
+void setPixelWBright(int pixel, byte red, byte green, byte blue, byte bright) {
+  setRelativeBrightness(bright);
   strip.SetPixelColor(pixel, RgbColor(red, green, blue));
 }
 
@@ -75,10 +86,9 @@ void setAll(byte red, byte green, byte blue) {
   showStrip();
 }
 
-void setAllWBright(byte red, byte green, byte blue, byte bright) {
-  strip.SetBrightness(bright);
+void setAllWBright(byte red, byte green, byte blue, byte bright) {  
   for (int i = 0; i < LED_COUNT; i++ ) {
-    setPixel(i, red, green, blue);
+    setPixelWBright(i, red, green, blue, bright);
   }
   showStrip();
 }

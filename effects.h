@@ -24,7 +24,7 @@ struct EffectsData {
 // * modify effects array by inserting new item referring your new effect
 // * update effectsCount constant
 
-const int effectsCount = 7;
+const int effectsCount = 8;
 
 EffectsData effects[effectsCount] = {
   {title: "Rainbow", fn: []() { rainbow(100); }},
@@ -32,6 +32,7 @@ EffectsData effects[effectsCount] = {
   {title: "Fire", fn: []() { fire(); }},
   {title: "RGB loop", fn: []() { RGBLoop(); }},
   {title: "Running LED", fn: []() { runningLed(); }},
+  {title: "Fade in-out", fn: []() { fadeInOut(); }},
   {title: "Lightning", fn: []() { strobeRandom(200, 200, 200); }},
   {title: "OFF", fn: []() { leds_off(); }},
 };
