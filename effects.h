@@ -9,6 +9,7 @@
 #include "fire.h"
 #include "leds_off.h"
 #include "change_color.h"
+#include "randomPixelColorChange.h"
 // -------------------------------------------------------------------------------------------
 
 typedef void (*EffectFunction) ();
@@ -25,13 +26,14 @@ struct EffectsData {
 // * modify effects array by inserting new item referring your new effect
 // * update effectsCount constant
 
-const int effectsCount = 9;
+const int effectsCount = 10;
 
 EffectsData effects[effectsCount] = {
   {title: "Rainbow", fn: []() { rainbow(100); }},
   {title: "Rainbow static", fn: []() { rainbow_static(100); }},
   {title: "Fire", fn: []() { fire(); }},
-  {title: "RGB loop", fn: []() { RGBLoop(); }},
+  {title: "Rainbow", fn: []() { rainbow(100); }},
+  {title: "colorful", fn: []() { randomPixelColorChange(); }},
   {title: "Running LED", fn: []() { runningLed(); }},
   {title: "Fade in-out", fn: []() { fadeInOut(); }},
   {title: "Change color", fn: []() { changeColor(); }},
